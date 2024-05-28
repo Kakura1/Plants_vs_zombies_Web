@@ -14,6 +14,19 @@ let zombiePositions = [];
 let projectiles = [];
 let suns = [];
 let controlsBar;
+/*
+zombi comun: 100 de vida
+zombi caracono: 280 de vida
+zombi caracubo: 340 de vida
+zombistein: 800 de vida
+*/ 
+/*
+Girasol: Te da 25 de soles
+Lanzaguisantes: Dispara 1 guisante cada 1 segundo
+Patatapum: Explosivo que se arma en 15 segundos y hace 400 de daño
+Nuez: Planta defensiva con una salud de 900
+Repetidora: Dispara 2 guisantes cada 1 segundo
+*/
 
 function setup() {
   createCanvas(900, 600);
