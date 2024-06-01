@@ -1,3 +1,11 @@
+/*
+Zombi: Son los zombies básicos en el juego. Éstos son enemigos débiles y fáciles de matar.
+Zombi caracono: Este zombie lleva un cono de tránsito en la cabeza, lo cual lo hace el doble de resistente que un zombi básico.
+Zombi caracubo: Este zombie posee un cubo en la cabeza que aumenta considerablemente su resistencia.
+Zombistein: Es uno de los zombis más fuertes en el juego. Este zombie aplasta las plantas en lugar de comerlas.
+*/
+/*
+// Variables Globales
 let cellSize = 100;
 let cellGap = 3;
 let gameGrid = [];
@@ -14,19 +22,91 @@ let zombiePositions = [];
 let projectiles = [];
 let suns = [];
 let controlsBar;
-/*
-zombi comun: 100 de vida
-zombi caracono: 280 de vida
-zombi caracubo: 340 de vida
-zombistein: 800 de vida
-*/ 
-/*
-Girasol: Te da 25 de soles
-Lanzaguisantes: Dispara 1 guisante cada 1 segundo
-Patatapum: Explosivo que se arma en 15 segundos y hace 400 de daño
-Nuez: Planta defensiva con una salud de 900
-Repetidora: Dispara 2 guisantes cada 1 segundo
+Lanzaguisantes: Es la primera planta de ataque del juego. 
+Su costo son 100 soles y dispara guisantes cada 1.5 segundos. 
+Su tiempo de recarga es de 5 seg, mientras que la dureza es de 3 mordiscos.
+Girasol: Es un elemento esencial para la producción de sol. 
+El costo de soles es de 50 y 
+su tiempo de recarga es de 5 segundos y su dureza es de 3 mordiscos.
+Nuez: Tiene una cáscara muy dura y puede proteger a otras plantas. 
+Su coste en soles es de 50 y 
+su tiempo de recarga en 20 seg y su dureza es de 40 mordiscos.
+Patatapum: Es una planta explosiva. 
+Una vez plantada, requiere de 15 segundos para estar activa. 
+Su costo es de 25 soles, mientras que su tiempo de recarga es de 10 seg y 
+su dureza es de 2 mordiscos, siempre y cuando no esté activa, 
+de lo contrario al acercarse un zombie explotaría.
+Repetidora: 
+Es una planta que dispara dos guisantes a la vez y su velocidad de disparo es más rápida que los lanzaguisantes. 
+Su tiempo de recarga es de 10 seg, mientras que su costo es de 200 soles y su dureza es de 5 mordiscos.
+
 */
+// Variables para guardar sprites de imagenes
+let img_bg;
+let img_menu;
+let img_gameOver;
+let img_titleScreen;
+let img_plants = [];
+let img_zombies = [];
+let img_projectiles = [];
+let img_sun;
+
+// Variables para guardar sonidos y musica
+let sound_tap;
+let sound_seed;
+let sound_sun;
+let sound_win;
+let sound_loose;
+let sound_inicialWave;
+let sound_finalWave;
+let sounds_metal = [];
+let sounds_plastic = [];
+let sounds_hit = [];
+let sounds_zombistein = [];
+let sounds_levelMusic = [];
+let sounds_zombisNoise = [];
+
+function preload() {
+  // Carga de imagenes sprite
+  img_bg = loadImage('assets/img/backgrounds/Garden.png');
+  img_menu = loadImage('assets/img/backgrounds/menu.jpg');
+  img_gameOver = loadImage('assets/img/backgrounds/Game_Over.png');
+  img_titleScreen = loadImage('assets/img/backgrounds/Title_Screen.png');
+  img_plants.push(loadImage('assets/img/plants/peashooter_sprite.png'));
+  img_plants.push(loadImage('assets/img/plants/sunflower_sprite.png'));
+  img_plants.push(loadImage('assets/img/plants/wallnut_sprite.png'));
+  img_plants.push(loadImage('assets/img/plants/patatapum_sprite.png'));
+  img_plants.push(loadImage('assets/img/plants/repeater_sprite.png'));
+  img_zombies.push(loadImage('assets/img/zombies/abanderado_sprite.png'));
+  img_zombies.push(loadImage('assets/img/zombies/zombies_sprite.png'));
+  img_zombies.push(loadImage('assets/img/zombies/zombistein_sprite.png'));
+  // Carga de sonidos y musica
+  sound_tap = loadSound('assets/sounds/tap.ogg');
+  sound_seed = loadSound('assets/sounds/');
+  sound_sun = loadSound('assets/sounds/');
+  sound_win = loadSound('assets/sounds/');
+  sound_loose = loadSound('assets/sounds/');
+  sound_inicialWave = loadSound('assets/sounds/awooga.ogg');
+  sound_finalWave = loadSound('assets/sounds/finalwave.ogg');
+  sounds_metal.push(loadSound('assets/sounds/'));  
+  sounds_metal.push(loadSound('assets/sounds/'));  
+  sounds_plastic.push(loadSound('assets/sounds/'));
+  sounds_plastic.push(loadSound('assets/sounds/'));
+  sounds_hit.push(loadSound('assets/sounds/splat.ogg'));
+  sounds_hit.push(loadSound('assets/sounds/splat2.ogg'));
+  sounds_hit.push(loadSound('assets/sounds/splat3.ogg'));
+  sounds_zombistein.push(loadSound('assets/sounds/gargantuar_thump.ogg'));
+  sounds_zombistein.push(loadSound('assets/sounds/gargantudeath.ogg'));
+  sounds_levelMusic.push(loadSound('assets/sounds/Grasswalk.mp3'));
+  sounds_levelMusic.push(loadSound('assets/sounds/Moongrains.mp3'));
+  sounds_zombisNoise.push(loadSound('assets/sounds/groan.ogg'));
+  sounds_zombisNoise.push(loadSound('assets/sounds/groan2.ogg'));
+  sounds_zombisNoise.push(loadSound('assets/sounds/groan3.ogg'));
+  sounds_zombisNoise.push(loadSound('assets/sounds/groan4.ogg'));
+  sounds_zombisNoise.push(loadSound('assets/sounds/groan5.ogg'));
+  sounds_zombisNoise.push(loadSound('assets/sounds/groan6.ogg'));
+  sounds_zombisNoise.push(loadSound('assets/sounds/gulp.ogg'));
+}
 
 function setup() {
   createCanvas(900, 600);

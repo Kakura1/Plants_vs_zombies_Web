@@ -1,6 +1,6 @@
 Fondo del nivel:
 X = 98 Y = 0
-Width = 900 Height = 597
+Width = 900 Height = 600
 
 Inicio de cuadricula de plantas:
 X = 248 Y = 0
