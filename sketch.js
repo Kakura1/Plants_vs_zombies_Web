@@ -51,6 +51,7 @@ let img_plants = [];
 let img_zombies = [];
 let img_projectiles = [];
 let img_sun;
+let img_heads = [];
 
 // Variables para guardar sonidos y musica
 let sound_tap;
@@ -80,9 +81,13 @@ function preload() {
   img_plants.push(loadImage('assets/img/plants/wallnut_sprite.png'));
   img_plants.push(loadImage('assets/img/plants/patatapum_sprite.png'));
   img_plants.push(loadImage('assets/img/plants/repeater_sprite.png'));
-  img_zombies.push(loadImage('assets/img/zombies/abanderado_sprite.png'));
-  img_zombies.push(loadImage('assets/img/zombies/zombies_sprite.png'));
-  img_zombies.push(loadImage('assets/img/zombies/zombistein_sprite.png'));
+  img_zombies.push(loadImage('assets/img/zombies/zombistein_sprite.png')); // Zombistein 0
+  img_zombies.push(loadImage('assets/img/zombies/zombies_walk_sprite.png')); // zombis normales caminando 1
+  img_zombies.push(loadImage('assets/img/zombies/zombies_eating_sprite.png')); // zombis comiendo 2
+  img_zombies.push(loadImage('assets/img/zombies/zombies_death_sprite.png')); // zombis muertos 3
+  img_zombies.push(loadImage('assets/img/zombies/abanderado_walk_sprite.png')); // zombi abanderado caminando 4
+  img_zombies.push(loadImage('assets/img/zombies/abanderado_eating_sprite.png')); // zombi abanderado comiendo 5
+  img_zombies.push(loadImage('assets/img/zombies/abanderado_death_sprite.png')); // zombi abanderado muerto 6
   // Carga de sonidos y musica
   sound_tap = loadSound('assets/sounds/tap.ogg');
   sound_seed = loadSound('assets/sounds/seedlift.ogg');
@@ -126,11 +131,13 @@ function draw() {
     sounds_levelMusic[0].play();
     bgmusic = true;
   }
-  handleGameGrid();
-  handlePlants();
-  handleZombies();
-  handleProjectiles();
-  handleSuns();
+  if(!gameOver){
+    handleGameGrid();
+    handlePlants();
+    handleZombies();
+    handleProjectiles();
+    handleSuns();
+  }
   handleGameStatus();
   frame++;
 }
@@ -238,7 +245,7 @@ class Zombie {
     this.y = verticalPosition;
     this.width = cellSize - cellGap * 2;
     this.height = cellSize - cellGap * 2;
-    this.speed = random(0.2, 0.6);
+    this.speed = random(0.2, 4.6);
     this.movement = this.speed;
     this.health = 100;
     this.maxHealth = this.health;
@@ -260,7 +267,7 @@ function handleZombies() {
   for (let zombie of zombies) {
     zombie.update();
     zombie.draw();
-    if (zombie.x < -cellSize) {
+    if (zombie.x < 0 ) {
       gameOver = true;
     }
     if (zombie.health <= 0) {
