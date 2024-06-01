@@ -26,6 +26,7 @@ Su tiempo de recarga es de 10 seg, mientras que su costo es de 200 soles y su du
 */
 // Variables Globales
 let cellSize = 100;
+let cellWidth = 83;
 let cellGap = 3;
 let gameGrid = [];
 let plants = [];
@@ -42,7 +43,7 @@ let projectiles = [];
 let suns = [];
 let controlsBar;
 // Variables para guardar sprites de imagenes
-let img_bg;
+let img_bg = [];
 let img_menu;
 let img_gameOver;
 let img_titleScreen;
@@ -65,10 +66,12 @@ let sounds_hit = [];
 let sounds_zombistein = [];
 let sounds_levelMusic = [];
 let sounds_zombisNoise = [];
+let bgmusic = false;
 
 function preload() {
   // Carga de imagenes sprite
-  img_bg = loadImage('assets/img/backgrounds/Garden.png');
+  img_bg.push(loadImage('assets/img/backgrounds/Garden.png'));
+  img_bg.push(loadImage('assets/img/backgrounds/Garden_night.png'));
   img_menu = loadImage('assets/img/backgrounds/menu.jpg');
   img_gameOver = loadImage('assets/img/backgrounds/Game_Over.png');
   img_titleScreen = loadImage('assets/img/backgrounds/Title_Screen.png');
@@ -82,16 +85,16 @@ function preload() {
   img_zombies.push(loadImage('assets/img/zombies/zombistein_sprite.png'));
   // Carga de sonidos y musica
   sound_tap = loadSound('assets/sounds/tap.ogg');
-  sound_seed = loadSound('assets/sounds/');
-  sound_sun = loadSound('assets/sounds/');
-  sound_win = loadSound('assets/sounds/');
-  sound_loose = loadSound('assets/sounds/');
+  sound_seed = loadSound('assets/sounds/seedlift.ogg');
+  sound_sun = loadSound('assets/sounds/points.ogg');
+  sound_win = loadSound('assets/sounds/winmusic.ogg');
+  sound_loose = loadSound('assets/sounds/losemusic.ogg');
   sound_inicialWave = loadSound('assets/sounds/awooga.ogg');
   sound_finalWave = loadSound('assets/sounds/finalwave.ogg');
-  sounds_metal.push(loadSound('assets/sounds/'));  
-  sounds_metal.push(loadSound('assets/sounds/'));  
-  sounds_plastic.push(loadSound('assets/sounds/'));
-  sounds_plastic.push(loadSound('assets/sounds/'));
+  sounds_metal.push(loadSound('assets/sounds/shieldhit.ogg'));  
+  sounds_metal.push(loadSound('assets/sounds/shieldhit2.ogg'));  
+  sounds_plastic.push(loadSound('assets/sounds/plastichit.ogg'));
+  sounds_plastic.push(loadSound('assets/sounds/plastichit2.ogg'));
   sounds_hit.push(loadSound('assets/sounds/splat.ogg'));
   sounds_hit.push(loadSound('assets/sounds/splat2.ogg'));
   sounds_hit.push(loadSound('assets/sounds/splat3.ogg'));
@@ -118,6 +121,11 @@ function draw() {
   background(220);
   fill('blue');
   rect(0, 0, controlsBar.width, controlsBar.height);
+  image(img_bg[0], 0, 0, 900, 600, 98, 0, 900, 600, COVER);
+  if(!bgmusic){
+    sounds_levelMusic[0].play();
+    bgmusic = true;
+  }
   handleGameGrid();
   handlePlants();
   handleZombies();
@@ -131,7 +139,7 @@ class Cell {
   constructor(x, y) {
     this.x = x;
     this.y = y;
-    this.width = cellSize;
+    this.width = cellWidth;
     this.height = cellSize;
   }
   draw() {
@@ -145,8 +153,8 @@ class Cell {
 
 function createGrid() {
   for (let y = cellSize; y < height; y += cellSize) {
-    for (let x = 0; x < width; x += cellSize) {
-      gameGrid.push(new Cell(x, y));
+    for (let x = 0; x < 746; x += cellWidth) {
+      gameGrid.push(new Cell(x + 150, y - 20));
     }
   }
 }
@@ -158,28 +166,29 @@ function handleGameGrid() {
 }
 
 class Plant {
-  constructor(x, y) {
-    this.x = x;
+  constructor(x, y, health, type) {
+    this.x = x - 15;
     this.y = y;
-    this.width = cellSize - (cellGap * 2);
+    this.width = cellWidth - (cellGap * 2);
     this.height = cellSize - (cellGap * 2);
     this.shooting = false;
-    this.health = 100;
+    this.health = health;
     this.timer = 0;
+    this.type = type;
   }
   draw() {
     fill('blue');
-    rect(this.x, this.y, this.width, this.height);
+    rect(this.x, this.y - 20, this.width, this.height);
     fill('gold');
     textSize(30);
     textAlign(CENTER, CENTER);
-    text(floor(this.health), this.x + this.width / 2, this.y + this.height / 2);
+    text(floor(this.health), this.x + this.width / 2, this.y + this.height / 2 - 25);
   }
   update() {
     if (this.shooting) {
       this.timer++;
       if (this.timer % 30 === 0) {
-        projectiles.push(new Projectile(this.x + 70, this.y + 25));
+        projectiles.push(new Projectile(this.x + 70, this.y));
       }
     } else {
       this.timer = 0;
@@ -188,7 +197,7 @@ class Plant {
 }
 
 function mousePressed() {
-  let gridPositionX = floor(mouseX / cellSize) * cellSize + cellGap;
+  let gridPositionX = floor(mouseX / cellWidth) * cellWidth + cellGap;
   let gridPositionY = floor(mouseY / cellSize) * cellSize + cellGap;
   if (gridPositionY < cellSize) return;
   for (let plant of plants) {
@@ -196,7 +205,7 @@ function mousePressed() {
   }
   let plantCost = 100;
   if (numberOfSuns >= plantCost) {
-    plants.push(new Plant(gridPositionX, gridPositionY));
+    plants.push(new Plant(gridPositionX, gridPositionY, 90, 'lanzaguisantes'));
     numberOfSuns -= plantCost;
   }
 }
@@ -239,11 +248,11 @@ class Zombie {
   }
   draw() {
     fill('red');
-    rect(this.x, this.y, this.width, this.height);
+    rect(this.x, this.y - 25, this.width, this.height);
     fill('black');
     textSize(30);
     textAlign(CENTER, CENTER);
-    text(floor(this.health), this.x + this.width / 2, this.y + this.height / 2);
+    text(floor(this.health), this.x + this.width / 2, this.y);
   }
 }
 
