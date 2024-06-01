@@ -67,6 +67,7 @@ let sounds_hit = [];
 let sounds_zombistein = [];
 let sounds_levelMusic = [];
 let sounds_zombisNoise = [];
+let sounds_plantsAtack = [];
 let bgmusic = false;
 
 function preload() {
@@ -81,13 +82,16 @@ function preload() {
   img_plants.push(loadImage('assets/img/plants/wallnut_sprite.png'));
   img_plants.push(loadImage('assets/img/plants/patatapum_sprite.png'));
   img_plants.push(loadImage('assets/img/plants/repeater_sprite.png'));
-  img_zombies.push(loadImage('assets/img/zombies/zombistein_sprite.png')); // Zombistein 0
-  img_zombies.push(loadImage('assets/img/zombies/zombies_walk_sprite.png')); // zombis normales caminando 1
-  img_zombies.push(loadImage('assets/img/zombies/zombies_eating_sprite.png')); // zombis comiendo 2
-  img_zombies.push(loadImage('assets/img/zombies/zombies_death_sprite.png')); // zombis muertos 3
-  img_zombies.push(loadImage('assets/img/zombies/abanderado_walk_sprite.png')); // zombi abanderado caminando 4
-  img_zombies.push(loadImage('assets/img/zombies/abanderado_eating_sprite.png')); // zombi abanderado comiendo 5
-  img_zombies.push(loadImage('assets/img/zombies/abanderado_death_sprite.png')); // zombi abanderado muerto 6
+  img_zombies.push(loadImage('assets/img/zombies/zombistein_walk_sprite.png')); // Zombistein 0
+  img_zombies.push(loadImage('assets/img/zombies/zombistein_smash_sprite.png')); // Zombistein 1
+  img_zombies.push(loadImage('assets/img/zombies/zombistein_death_sprite.png')); // Zombistein 2
+  img_zombies.push(loadImage('assets/img/zombies/zombies_walk_sprite.png')); // zombis normales caminando 3
+  img_zombies.push(loadImage('assets/img/zombies/zombies_eating_sprite.png')); // zombis comiendo 4
+  img_zombies.push(loadImage('assets/img/zombies/zombies_death_sprite.png')); // zombis muertos 5
+  img_zombies.push(loadImage('assets/img/zombies/abanderado_walk_sprite.png')); // zombi abanderado caminando 6
+  img_zombies.push(loadImage('assets/img/zombies/abanderado_eating_sprite.png')); // zombi abanderado comiendo 7
+  img_zombies.push(loadImage('assets/img/zombies/abanderado_death_sprite.png')); // zombi abanderado muerto 8
+  img_heads = loadImage('assets/img/zombies/heads_sprites.png');
   // Carga de sonidos y musica
   sound_tap = loadSound('assets/sounds/tap.ogg');
   sound_seed = loadSound('assets/sounds/seedlift.ogg');
@@ -96,8 +100,8 @@ function preload() {
   sound_loose = loadSound('assets/sounds/losemusic.ogg');
   sound_inicialWave = loadSound('assets/sounds/awooga.ogg');
   sound_finalWave = loadSound('assets/sounds/finalwave.ogg');
-  sounds_metal.push(loadSound('assets/sounds/shieldhit.ogg'));  
-  sounds_metal.push(loadSound('assets/sounds/shieldhit2.ogg'));  
+  sounds_metal.push(loadSound('assets/sounds/shieldhit.ogg'));
+  sounds_metal.push(loadSound('assets/sounds/shieldhit2.ogg'));
   sounds_plastic.push(loadSound('assets/sounds/plastichit.ogg'));
   sounds_plastic.push(loadSound('assets/sounds/plastichit2.ogg'));
   sounds_hit.push(loadSound('assets/sounds/splat.ogg'));
@@ -107,13 +111,20 @@ function preload() {
   sounds_zombistein.push(loadSound('assets/sounds/gargantudeath.ogg'));
   sounds_levelMusic.push(loadSound('assets/sounds/Grasswalk.mp3'));
   sounds_levelMusic.push(loadSound('assets/sounds/Moongrains.mp3'));
-  sounds_zombisNoise.push(loadSound('assets/sounds/groan.ogg'));
-  sounds_zombisNoise.push(loadSound('assets/sounds/groan2.ogg'));
-  sounds_zombisNoise.push(loadSound('assets/sounds/groan3.ogg'));
-  sounds_zombisNoise.push(loadSound('assets/sounds/groan4.ogg'));
-  sounds_zombisNoise.push(loadSound('assets/sounds/groan5.ogg'));
-  sounds_zombisNoise.push(loadSound('assets/sounds/groan6.ogg'));
-  sounds_zombisNoise.push(loadSound('assets/sounds/gulp.ogg'));
+  sounds_zombisNoise.push(loadSound('assets/sounds/groan.ogg')); // gruñido 0
+  sounds_zombisNoise.push(loadSound('assets/sounds/groan2.ogg')); // gruñido 1
+  sounds_zombisNoise.push(loadSound('assets/sounds/groan3.ogg')); // gruñido 2
+  sounds_zombisNoise.push(loadSound('assets/sounds/groan4.ogg')); // gruñido 3
+  sounds_zombisNoise.push(loadSound('assets/sounds/groan5.ogg')); // gruñido 4
+  sounds_zombisNoise.push(loadSound('assets/sounds/groan6.ogg')); // gruñido 5
+  sounds_zombisNoise.push(loadSound('assets/sounds/chomp.ogg')); // comer 6
+  sounds_zombisNoise.push(loadSound('assets/sounds/chomp2.ogg')); // comer 7 
+  sounds_zombisNoise.push(loadSound('assets/sounds/chompsoft.ogg')); // comer 8
+  sounds_zombisNoise.push(loadSound('assets/sounds/gulp.ogg')); // tragar 9
+  sounds_zombisNoise.push(loadSound('assets/sounds/zombie_falling_1.ogg')); // muerto 10
+  sounds_zombisNoise.push(loadSound('assets/sounds/zombie_falling_1.ogg')); // muerto 11
+  sounds_plantsAtack.push(loadSound('assets/sounds/throw.ogg'));
+  sounds_plantsAtack.push(loadSound('assets/sounds/throw2.ogg'));
 }
 
 function setup() {
@@ -127,18 +138,19 @@ function draw() {
   fill('blue');
   rect(0, 0, controlsBar.width, controlsBar.height);
   image(img_bg[0], 0, 0, 900, 600, 98, 0, 900, 600, COVER);
-  if(!bgmusic){
-    sounds_levelMusic[0].play();
+  if (!bgmusic) {
+    sounds_levelMusic[0].volume = 0.6;
+    sounds_levelMusic[0].loop();
     bgmusic = true;
   }
-  if(!gameOver){
+  if (!gameOver) {
     handleGameGrid();
     handlePlants();
     handleZombies();
     handleProjectiles();
     handleSuns();
+    handleGameStatus();
   }
-  handleGameStatus();
   frame++;
 }
 
@@ -194,8 +206,9 @@ class Plant {
   update() {
     if (this.shooting) {
       this.timer++;
-      if (this.timer % 30 === 0) {
+      if (this.timer % 100 === 0) {
         projectiles.push(new Projectile(this.x + 70, this.y));
+        sounds_plantsAtack[Math.floor(Math.random() * 2)].play();
       }
     } else {
       this.timer = 0;
@@ -213,6 +226,7 @@ function mousePressed() {
   let plantCost = 100;
   if (numberOfSuns >= plantCost) {
     plants.push(new Plant(gridPositionX, gridPositionY, 90, 'lanzaguisantes'));
+    sound_seed.play();
     numberOfSuns -= plantCost;
   }
 }
@@ -230,8 +244,20 @@ function handlePlants() {
       if (collision(plant, zombie)) {
         zombie.movement = 0;
         plant.health -= 0.5;
+        switch (plant.health) {
+          case 75:
+            sounds_zombisNoise[Math.floor(Math.random()* 3) + 5].play();
+            break;
+          case 45:
+            sounds_zombisNoise[Math.floor(Math.random()* 3) + 5].play();
+            break;
+          case 15:
+            sounds_zombisNoise[Math.floor(Math.random()* 3) + 5].play();
+            break;
+        }
       }
       if (plant.health <= 0) {
+        sounds_zombisNoise[9].play();
         plants.splice(plants.indexOf(plant), 1);
         zombie.movement = zombie.speed;
       }
@@ -240,15 +266,16 @@ function handlePlants() {
 }
 
 class Zombie {
-  constructor(verticalPosition) {
+  constructor(verticalPosition, health, type) {
     this.x = width;
     this.y = verticalPosition;
     this.width = cellSize - cellGap * 2;
     this.height = cellSize - cellGap * 2;
-    this.speed = random(0.2, 4.6);
+    this.speed = random(0.2, 0.8);
     this.movement = this.speed;
-    this.health = 100;
+    this.health = health;
     this.maxHealth = this.health;
+    this.type = type;
   }
   update() {
     this.x -= this.movement;
@@ -267,7 +294,7 @@ function handleZombies() {
   for (let zombie of zombies) {
     zombie.update();
     zombie.draw();
-    if (zombie.x < 0 ) {
+    if (zombie.x < 0) {
       gameOver = true;
     }
     if (zombie.health <= 0) {
@@ -279,7 +306,7 @@ function handleZombies() {
   }
   if (frame % zombiesInterval === 0 && zombiesSpawn < zombiesPerLevel) {
     let verticalPosition = floor(random(1, 6)) * cellSize + cellGap;
-    zombies.push(new Zombie(verticalPosition));
+    zombies.push(new Zombie(verticalPosition, 100, 'comun'));
     zombiesSpawn++;
     zombiePositions.push(verticalPosition);
     if (zombiesInterval > 120) zombiesInterval -= 40;
@@ -314,6 +341,7 @@ function handleProjectiles() {
       let zombie = zombies[j];
       if (collision(projectile, zombie)) {
         zombie.health -= projectile.power;
+        sounds_hit[Math.floor(Math.random() * 3)].play();
         projectiles.splice(i, 1);
         break;
       }
@@ -353,6 +381,7 @@ function handleSuns() {
     if (mouseX && mouseY && collision(sun, { x: mouseX, y: mouseY, width: 0.1, height: 0.1 })) {
       numberOfSuns += sun.sun;
       suns.splice(i, 1);
+      sound_sun.play();
     }
   }
 }
@@ -372,6 +401,8 @@ function handleGameStatus() {
     textAlign(CENTER, CENTER);
     text("GAME OVER", width / 2, height / 2);
     noLoop();
+    sounds_levelMusic[0].stop();
+    sound_loose.play();
   }
   if (zombies.length === 0 && zombiesKilled === zombiesPerLevel) {
     // Siguiente nivel
