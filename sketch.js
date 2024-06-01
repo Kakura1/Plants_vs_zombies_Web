@@ -5,23 +5,6 @@ Zombi caracubo: Este zombie posee un cubo en la cabeza que aumenta considerablem
 Zombistein: Es uno de los zombis m√°s fuertes en el juego. Este zombie aplasta las plantas en lugar de comerlas.
 */
 /*
-// Variables Globales
-let cellSize = 100;
-let cellGap = 3;
-let gameGrid = [];
-let plants = [];
-let zombies = [];
-let numberOfSuns = 50;
-let frame = 0;
-let zombiesInterval = 900;
-let zombiesPerLevel = 15;
-let zombiesKilled = 0;
-let zombiesSpawn = 0;
-let gameOver = false;
-let zombiePositions = [];
-let projectiles = [];
-let suns = [];
-let controlsBar;
 Lanzaguisantes: Es la primera planta de ataque del juego. 
 Su costo son 100 soles y dispara guisantes cada 1.5 segundos. 
 Su tiempo de recarga es de 5 seg, mientras que la dureza es de 3 mordiscos.
@@ -41,6 +24,23 @@ Es una planta que dispara dos guisantes a la vez y su velocidad de disparo es m√
 Su tiempo de recarga es de 10 seg, mientras que su costo es de 200 soles y su dureza es de 5 mordiscos.
 
 */
+// Variables Globales
+let cellSize = 100;
+let cellGap = 3;
+let gameGrid = [];
+let plants = [];
+let zombies = [];
+let numberOfSuns = 50;
+let frame = 0;
+let zombiesInterval = 900;
+let zombiesPerLevel = 15;
+let zombiesKilled = 0;
+let zombiesSpawn = 0;
+let gameOver = false;
+let zombiePositions = [];
+let projectiles = [];
+let suns = [];
+let controlsBar;
 // Variables para guardar sprites de imagenes
 let img_bg;
 let img_menu;
