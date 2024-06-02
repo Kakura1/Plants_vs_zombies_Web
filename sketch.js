@@ -31,10 +31,10 @@ let cellGap = 3;
 let gameGrid = [];
 let plants = [];
 let zombies = [];
-let numberOfSuns = 50;
+let numberOfSuns = 500;
 let frame = 0;
 let zombiesInterval = 900;
-let zombiesPerLevel = 15;
+let zombiesPerLevel = 1;
 let zombiesKilled = 0;
 let zombiesSpawn = 0;
 let gameOver = false;
@@ -42,6 +42,57 @@ let zombiePositions = [];
 let projectiles = [];
 let suns = [];
 let controlsBar;
+let typePlants = [];
+let level = [];
+let currentLevel = 1;
+
+// Preparacion de niveles, arreglos de plantas y Zombies
+level.push({
+  zombiesPerLevel: 15,
+  zombiesInterval: 900,
+  zombies: ['comun', 'caracono', 'abanderado'],
+  plants: ['lanzaguisantes', 'girasol'],
+});
+level.push({
+  zombiesPerLevel: 45,
+  zombiesInterval: 900,
+  zombies: ['comun', 'caracono', 'caracubo', 'abanderado'],
+  plants: ['lanzaguisantes', 'girasol', 'nuez', 'patatapum'],
+});
+level.push({
+  zombiesPerLevel: 80,
+  zombiesInterval: 900,
+  zombies: ['comun', 'caracono', 'caracubo', 'abanderado', 'zombistein'],
+  plants: ['lanzaguisantes', 'girasol', 'nuez', 'patatapum', 'repetidora'],
+});
+typePlants.push({
+  type: 'lanzaguisantes',
+  health: 90,
+  time: 5,
+  isShooter: true,
+});
+typePlants.push({
+  type: 'girasol',
+  health: 90,
+  time: 5,
+});
+typePlants.push({
+  type: 'nuez',
+  health: 1200,
+  time: 20,
+});
+typePlants.push({
+  type: 'patatapum',
+  health: 60,
+  time: 10,
+});
+typePlants.push({
+  type: 'repetidora',
+  health: 150,
+  time: 10,
+  isShooter: true,
+});
+
 // Variables para guardar sprites de imagenes
 let img_bg = [];
 let img_menu;
@@ -69,6 +120,7 @@ let sounds_levelMusic = [];
 let sounds_zombisNoise = [];
 let sounds_plantsAtack = [];
 let bgmusic = false;
+let winmusic = false;
 
 function preload() {
   // Carga de imagenes sprite
@@ -131,6 +183,7 @@ function setup() {
   createCanvas(900, 600);
   controlsBar = { width: width, height: cellSize };
   createGrid();
+  frameRate(100);
 }
 
 function draw() {
@@ -143,14 +196,14 @@ function draw() {
     sounds_levelMusic[0].loop();
     bgmusic = true;
   }
-  if (!gameOver) {
-    handleGameGrid();
-    handlePlants();
+  if (!gameOver && !winmusic) {
     handleZombies();
-    handleProjectiles();
-    handleSuns();
-    handleGameStatus();
   }
+  handleGameGrid();
+  handlePlants();
+  handleProjectiles();
+  handleSuns();
+  handleGameStatus();
   frame++;
 }
 
@@ -163,9 +216,7 @@ class Cell {
   }
   draw() {
     if (mouseX && mouseY && collision(this, { x: mouseX, y: mouseY, width: 0.1, height: 0.1 })) {
-      stroke('black');
-      noFill();
-      rect(this.x, this.y, this.width, this.height);
+
     }
   }
 }
@@ -220,46 +271,38 @@ function mousePressed() {
   let gridPositionX = floor(mouseX / cellWidth) * cellWidth + cellGap;
   let gridPositionY = floor(mouseY / cellSize) * cellSize + cellGap;
   if (gridPositionY < cellSize) return;
-  for (let plant of plants) {
-    if (plant.x === gridPositionX && plant.y === gridPositionY) return;
+  for (let i = 0; i < plants.length; i++) {
+    if (plants[i].x + 15 === gridPositionX && plants[i].y === gridPositionY) return;
   }
   let plantCost = 100;
   if (numberOfSuns >= plantCost) {
-    plants.push(new Plant(gridPositionX, gridPositionY, 90, 'lanzaguisantes'));
+    plants.push(new Plant(gridPositionX, gridPositionY, typePlants[1].health, typePlants[1].health));
     sound_seed.play();
     numberOfSuns -= plantCost;
   }
 }
 
 function handlePlants() {
-  for (let plant of plants) {
-    plant.draw();
-    plant.update();
-    if (zombiePositions.indexOf(plant.y) !== -1) {
-      plant.shooting = true;
+  for (let i = 0; i < plants.length; i++) {
+    plants[i].draw();
+    plants[i].update();
+    if (zombiePositions.indexOf(plants[i].y) !== -1) {
+      plants[i].shooting = true;
     } else {
-      plant.shooting = false;
+      plants[i].shooting = false;
     }
-    for (let zombie of zombies) {
-      if (collision(plant, zombie)) {
-        zombie.movement = 0;
-        plant.health -= 0.5;
-        switch (plant.health) {
-          case 75:
-            sounds_zombisNoise[Math.floor(Math.random()* 3) + 5].play();
-            break;
-          case 45:
-            sounds_zombisNoise[Math.floor(Math.random()* 3) + 5].play();
-            break;
-          case 15:
-            sounds_zombisNoise[Math.floor(Math.random()* 3) + 5].play();
-            break;
+    for (let j = 0; j < zombies.length; j++) {
+      if (collision(plants[i], zombies[j])) {
+        zombies[j].movement = 0;
+        plants[i].health -= 0.5;
+        if (plants[i].health % 30 === 0) {
+          sounds_zombisNoise[Math.floor(Math.random() * 3) + 5].play();
         }
       }
-      if (plant.health <= 0) {
+      if (plants[i].health <= 0) {
         sounds_zombisNoise[9].play();
-        plants.splice(plants.indexOf(plant), 1);
-        zombie.movement = zombie.speed;
+        plants.splice(i, 1);
+        zombies[j].movement = zombies[j].speed;
       }
     }
   }
@@ -291,17 +334,17 @@ class Zombie {
 }
 
 function handleZombies() {
-  for (let zombie of zombies) {
-    zombie.update();
-    zombie.draw();
-    if (zombie.x < 0) {
+  for (let i = 0; i < zombies.length; i++) {
+    zombies[i].update();
+    zombies[i].draw();
+    if (zombies[i].x < 0) {
       gameOver = true;
     }
-    if (zombie.health <= 0) {
-      let index = zombies.indexOf(zombie);
-      zombies.splice(index, 1);
+    if (zombies[i].health <= 0) {
+      let index = zombies.indexOf(zombies[i]);
       zombiesKilled++;
-      zombiePositions.splice(zombiePositions.indexOf(zombie.y), 1);
+      zombiePositions.splice(zombiePositions.indexOf(zombies[i].y), 1);
+      zombies.splice(index, 1);
     }
   }
   if (frame % zombiesInterval === 0 && zombiesSpawn < zombiesPerLevel) {
@@ -355,7 +398,7 @@ function handleProjectiles() {
 
 class Sun {
   constructor() {
-    this.x = random(width - cellSize);
+    this.x = random(width - (cellSize * 2)) + 100;
     this.y = (floor(random(1, 6)) * cellSize) + 25;
     this.width = cellSize * 0.4;
     this.height = cellSize * 0.4;
@@ -372,8 +415,10 @@ class Sun {
 }
 
 function handleSuns() {
-  if (frame % 200 === 0) {
-    suns.push(new Sun());
+  if (!gameOver && !winmusic) {
+    if (frame % 200 === 0) {
+      suns.push(new Sun());
+    }
   }
   for (let i = suns.length - 1; i >= 0; i--) {
     let sun = suns[i];
@@ -406,17 +451,33 @@ function handleGameStatus() {
   }
   if (zombies.length === 0 && zombiesKilled === zombiesPerLevel) {
     // Siguiente nivel
-    console.log("Ganaste, pasa al siguiente nivel");
+    if (!winmusic) {
+      sound_win.play();
+      sounds_levelMusic[0].stop();
+      winmusic = true;
+      switch (currentLevel) {
+        case 1:
+          break;
+        case 2:
+          break;
+        case 3:
+          break;
+      }
+    }
   }
 }
 
 function collision(first, second) {
-  return !(
-    first.x > second.x + second.width ||
-    first.x + first.width < second.x ||
-    first.y > second.y + second.height ||
-    first.y + first.height < second.y
-  );
+  if (first || second) {
+    return !(
+      first.x > second.x + second.width ||
+      first.x + first.width < second.x ||
+      first.y > second.y + second.height ||
+      first.y + first.height < second.y
+    );
+  } else {
+
+  }
 }
 
 function windowResized() {
