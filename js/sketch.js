@@ -178,10 +178,18 @@ function handleGameGrid() {
     gameGrid[i].draw();
   }
 }
-
+let plantSelect;
 function mousePressed() {
   let gridPositionX = floor(mouseX / cellWidth) * cellWidth + cellGap;
   let gridPositionY = floor(mouseY / cellSize) * cellSize + cellGap;
+  let pos = { x: gridPositionX, y: gridPositionY};
+  if (gridPositionX > 108 && gridPositionX < 408 && gridPositionY > 10 && gridPositionY < 90){
+    for(let i = 0; i < seeds.length; i++){
+      if (collision(pos,seeds[i])){
+        plantSelect = seeds[i].typePlants;
+      }
+    }
+  }
   if (gridPositionY < cellSize && gridPositionX > 150 && gridPositionY < 850) return;
   for (let i = 0; i < plants.length; i++) {
     if (plants[i].x + 15 === gridPositionX && plants[i].y === gridPositionY) return;
