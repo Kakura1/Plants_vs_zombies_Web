@@ -8,6 +8,7 @@ class seedPack {
     this.img = img;
     this.height = 80;
     this.plant = false;
+    this.select;
   }
   update() {
     if (frame % 60 === 0) {
@@ -46,7 +47,15 @@ class seedPack {
     textSize(15);
     textAlign(CENTER, CENTER);
     text(this.sunCost, this.x + 25, this.y + 70);
+    if(numberOfSuns < this.sunCost){
+      fill('rgba(0,0,0,0.8)');
+      rect(this.x, this.y, 60, 80);
+    }
     fill('rgba(0,0,0,0.6)');
     rect(this.x, this.y, 60, this.height);
+    if (this.select){
+      fill('rgba(255,255,255,0.6)');
+      rect(this.x, this.y, 60, 80);
+    }
   }
 }

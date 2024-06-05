@@ -19,6 +19,25 @@ let suns = [];
 let controlsBar;
 let currentLevel = 1;
 
+
+let keys = [{
+  keyCode: 49,
+  key: '1',
+}, {
+  keyCode: 50,
+  key: '2',
+}, {
+  keyCode: 51,
+  key: '3',
+}, {
+  keyCode: 52,
+  key: '4',
+}, {
+  keyCode: 53,
+  key: '5',
+}];
+
+
 // Preparacion de niveles, arreglos de plantas y Zombies
 
 
@@ -44,7 +63,7 @@ let typePlants = [{
   health: 90,
   time: 5,
   isShooter: true,
-  maxFrame: 23,
+  maxFrame: 25,
   width: 80,
   height: 78,
   sunCost: 100
@@ -62,7 +81,7 @@ let typePlants = [{
   health: 1200,
   time: 20,
   isShooter: false,
-  maxFrame: 25,
+  maxFrame: 43,
   width: 80,
   height: 78,
   sunCost: 50
@@ -71,9 +90,9 @@ let typePlants = [{
   health: 60,
   time: 10,
   isShooter: false,
-  maxFrame: 25,
-  width: 80,
-  height: 78,
+  maxFrame: 36,
+  width: 95,
+  height: 80,
   sunCost: 25
 }, {
   type: 'repetidora',
@@ -117,6 +136,14 @@ function setup() {
   sound_start.play();
 }
 
+
+let seeds = [];
+seeds.push(new seedPack(108, 10, typePlants[0], 100, 3, 0));
+seeds.push(new seedPack(168, 10, typePlants[1], 50, 5, 1));
+seeds.push(new seedPack(228, 10, typePlants[2], 50, 20, 2));
+seeds.push(new seedPack(288, 10, typePlants[3], 25, 10, 3));
+seeds.push(new seedPack(348, 10, typePlants[4], 200, 10, 4));
+
 let x = 0;
 
 function draw() {
@@ -134,16 +161,20 @@ function draw() {
 
     }
     handleGameStatus();
-    handleGameGrid();
     handlePlants();
     handleZombies();
     handleProjectiles();
     handleSuns();
+    handleGameGrid();
 
   } else {
     image(img_start, 345, 260, 310, 112, 0, x * 116, 310, 112);
     if (frame % 60 === 30 && x < 3) {
       x++;
+    }
+    if (x === 3) {
+      second();
+      sound_start.stop();
     }
   }
   frame++;
@@ -158,9 +189,9 @@ class Cell {
   }
   draw() {
     if (mouseX && mouseY && collision(this, { x: mouseX, y: mouseY, width: 0.1, height: 0.1 })) {
-      /*stroke('black');
+      stroke('black');
       noFill();
-      rect(this.x,this.y - 25,this.width,this.height);*/
+      rect(this.x, this.y - 25, this.width, this.height);
     }
   }
 }
@@ -178,14 +209,14 @@ function handleGameGrid() {
     gameGrid[i].draw();
   }
 }
-let plantSelect;
+let plantSelect = 0;
 function mousePressed() {
   let gridPositionX = floor(mouseX / cellWidth) * cellWidth + cellGap;
   let gridPositionY = floor(mouseY / cellSize) * cellSize + cellGap;
-  let pos = { x: gridPositionX, y: gridPositionY};
-  if (gridPositionX > 108 && gridPositionX < 408 && gridPositionY > 10 && gridPositionY < 90){
-    for(let i = 0; i < seeds.length; i++){
-      if (collision(pos,seeds[i])){
+  let pos = { x: gridPositionX, y: gridPositionY };
+  if (gridPositionX > 108 && gridPositionX < 408 && gridPositionY > 10 && gridPositionY < 90) {
+    for (let i = 0; i < seeds.length; i++) {
+      if (collision(pos, seeds[i])) {
         plantSelect = seeds[i].typePlants;
       }
     }
@@ -194,9 +225,12 @@ function mousePressed() {
   for (let i = 0; i < plants.length; i++) {
     if (plants[i].x + 15 === gridPositionX && plants[i].y === gridPositionY) return;
   }
-  let plantCost = 100;
-  if (numberOfSuns >= plantCost && gridPositionX > 150) {
-    plants.push(new Plant(gridPositionX, gridPositionY, typePlants[0].health, typePlants[0].health, img_plants[0], 25, typePlants[0].width, typePlants[0].height, typePlants[0].isShooter));
+  let plantCost = typePlants[plantSelect].sunCost;
+  if (numberOfSuns >= plantCost && gridPositionX > 150 && seeds[1].timeWait <= 0) {
+    plants.push(new Plant(gridPositionX, gridPositionY, typePlants[plantSelect].health, typePlants[plantSelect].type, img_plants[plantSelect], typePlants[plantSelect].maxFrame, typePlants[plantSelect].width, typePlants[plantSelect].height, typePlants[plantSelect].isShooter));
+    seeds[plantSelect].height = 80;
+    seeds[plantSelect].timeWait = typePlants[plantSelect].time;
+    seeds[plantSelect].select = false;
     sound_seed.play();
     numberOfSuns -= plantCost;
   } else {
@@ -291,7 +325,7 @@ function handleProjectiles() {
 
 function handleSuns() {
   if (!gameOver && !winmusic) {
-    if (frame % 300 === 0) {
+    if (frame % 900 === 0) {
       suns.push(new Sun());
     }
   }
@@ -392,10 +426,52 @@ function seedPacks() {
   text(numberOfSuns, 50, 93);
 }
 
-
-let seeds = [];
-seeds.push(new seedPack(108, 10, typePlants[0], 100, 3, 0));
-seeds.push(new seedPack(168, 10, typePlants[1], 50, 5, 1));
-seeds.push(new seedPack(228, 10, typePlants[2], 50, 20, 2));
-seeds.push(new seedPack(288, 10, typePlants[3], 25, 10, 3));
-seeds.push(new seedPack(348, 10, typePlants[4], 200, 10, 4));
+function keyTyped() {
+  switch (key) {
+    case keys[0].key:
+      plantSelect = 0;
+      seeds[0].select = true;
+      seeds[1].select = false;
+      seeds[2].select = false;
+      seeds[3].select = false;
+      seeds[4].select = false;
+      sound_tap.play();
+      break;
+    case keys[1].key:
+      plantSelect = 1;
+      seeds[0].select = false;
+      seeds[1].select = true;
+      seeds[2].select = false;
+      seeds[3].select = false;
+      seeds[4].select = false;
+      sound_tap.play();
+      break;
+    case keys[2].key:
+      plantSelect = 2;
+      seeds[0].select = false;
+      seeds[1].select = false;
+      seeds[2].select = true;
+      seeds[3].select = false;
+      seeds[4].select = false;
+      sound_tap.play();
+      break;
+    case keys[3].key:
+      plantSelect = 3;
+      seeds[0].select = false;
+      seeds[1].select = false;
+      seeds[2].select = false;
+      seeds[3].select = true;
+      seeds[4].select = false;
+      sound_tap.play();
+      break;
+    case keys[4].key:
+      plantSelect = 4;
+      seeds[0].select = false;
+      seeds[1].select = false;
+      seeds[2].select = false;
+      seeds[3].select = false;
+      seeds[4].select = true;
+      sound_tap.play();
+      break;
+  }
+}
