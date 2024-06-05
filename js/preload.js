@@ -70,8 +70,8 @@ function preload() {
   sounds_hit.push(loadSound('assets/sounds/splat3.ogg'));
   sounds_zombistein.push(loadSound('assets/sounds/gargantuar_thump.ogg'));
   sounds_zombistein.push(loadSound('assets/sounds/gargantudeath.ogg'));
-  sounds_levelMusic.push(loadSound('assets/sounds/Grasswalk.mp3'));
-  sounds_levelMusic.push(loadSound('assets/sounds/Moongrains.mp3'));
+  sounds_levelMusic.push(loadSound('assets/sounds/Grasswalk.ogg'));
+  sounds_levelMusic.push(loadSound('assets/sounds/Moongrains.ogg'));
   sounds_zombisNoise.push(loadSound('assets/sounds/groan.ogg')); // gruñido 0
   sounds_zombisNoise.push(loadSound('assets/sounds/groan2.ogg')); // gruñido 1
   sounds_zombisNoise.push(loadSound('assets/sounds/groan3.ogg')); // gruñido 2

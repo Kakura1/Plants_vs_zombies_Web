@@ -1,5 +1,5 @@
 class Plant {
-    constructor(x, y, health, type) {
+    constructor(x, y, health, type, img, maxFrame, spriteWidth, spriteHeight, shooter) {
       this.x = x - 15;
       this.y = y;
       this.width = cellWidth - (cellGap * 2);
@@ -8,14 +8,20 @@ class Plant {
       this.health = health;
       this.timer = 0;
       this.type = type;
+      this.img = img;
+      this.frameX = 0;
+      this.frameY = 0;
+      this.minFrame = 0;
+      this.maxFrame = maxFrame;
+      this.spriteWidth = spriteWidth;
+      this.spriteHeight = spriteHeight;
+      this.shooter = shooter;
     }
     draw() {
-      fill('blue');
-      rect(this.x, this.y - 20, this.width, this.height);
-      fill('gold');
-      textSize(30);
-      textAlign(CENTER, CENTER);
-      text(floor(this.health), this.x + this.width / 2, this.y + this.height / 2 - 25);
+      // image(img, sx, sy, sw, sh, dx, dy, dw, dh);
+      image(this.img, this.x, this.y - 25, this.spriteWidth, this.spriteHeight, 
+        this.frameX * this.spriteWidth, this.frameY * this.spriteHeight, 
+        this.spriteWidth, this.spriteHeight)
     }
     update() {
       if (this.shooting) {
@@ -26,6 +32,10 @@ class Plant {
         }
       } else {
         this.timer = 0;
+      }
+      if (frame % 3 === 0) {
+        if (this.frameX < this.maxFrame) this.frameX++;
+        else this.frameX = this.minFrame;
       }
     }
   }
