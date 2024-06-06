@@ -11,10 +11,6 @@ class Projectile {
       this.x += this.speed;
     }
     draw() {
-        /*
-      fill('black');
-      ellipse(this.x, this.y, this.width * 2, this.height * 2);*/
-      // image(img, sx, sy, sw, sh, dx, dy, dw, dh);
       image(img_projectiles, this.x - 5, this.y - 15, 28, 28, 5, 69, 28, 28)
     }
   }

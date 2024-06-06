@@ -110,22 +110,27 @@ let typeZombie = [
   {
     type: 'comun', health: 100, walkFrames: 45,
     eatFrames: 39, deathFrames: 38, width: 196,
+    height: 150,
   },
   {
     type: 'abanderado', health: 100, walkFrames: 54,
-    eatFrames: 39, deathFrames: 38, width: 196
+    eatFrames: 39, deathFrames: 38, width: 196,
+    height: 150,
   },
   {
     type: 'caracono', health: 280, walkFrames: 45,
-    eatFrames: 39, deathFrames: 38, width: 196
+    eatFrames: 39, deathFrames: 38, width: 196,
+    height: 150,
   },
   {
     type: 'caracubo', health: 370, walkFrames: 45,
-    eatFrames: 39, deathFrames: 38, width: 196
+    eatFrames: 39, deathFrames: 38, width: 196,
+    height: 150
   },
   {
     type: 'zombistein', health: 1000, walkFrames: 43,
-    smashFrames: 30, deathFrames: 53, width: 250
+    eatFrames: 30, deathFrames: 53, width: 380,
+    height: 250,
   }];
 
 function setup() {
@@ -172,8 +177,8 @@ function draw() {
     }
     handleGameStatus();
     handlePlants();
-    handleZombies();
     handleProjectiles();
+    handleZombies();
     handleSuns();
     handleGameGrid();
 
@@ -261,10 +266,11 @@ function handlePlants() {
     }
     for (let j = 0; j < zombies.length; j++) {
       if (plants[i] && zombies[j] && collision(plants[i], zombies[j])) {
-        if(plants[i].type === 'patatapum' && plants[i].armed == 0){
+        if (plants[i].type === 'patatapum' && plants[i].armed == 0) {
           sound_patatapum.play();
           zombies[j].health -= 400;
-          plants.splice(i,1);
+          plants.splice(i, 1);
+          i--;
         }
         zombies[j].movement = 0;
         if (zombies[j].frameY == 0) {
@@ -272,14 +278,26 @@ function handlePlants() {
         }
         zombies[j].frameY = 1;
         zombies[j].maxFrame = typeZombie[0].eatFrames;
-        plants[i].health -= 0.5;
-        if (plants[i].health % 30 === 0) {
-          sounds_zombisNoise[Math.floor(Math.random() * 3) + 5].play();
+        if (zombies[j].type === 'zombistein' && zombies[j].frameX == 20) {
+          zombies[j].spriteHeight == 280;
+          sounds_zombistein[0].play();
+          plants.splice(i, 1);
+          i--;
+          zombies[j].movement = zombies[j].speed;
+          zombies[j].frameX = 0;
+          zombies[j].frameY = 0;
+          zombies[j].maxFrame = typeZombie[0].walkFrames;
+        } else if(zombies[j].type !== 'zombistein'){
+          plants[i].health -= 0.5;
+          if (plants[i].health % 30 === 0) {
+            sounds_zombisNoise[Math.floor(Math.random() * 3) + 5].play();
+          }
         }
       }
-      if (plants[i] && plants[i].health <= 0) {
+      if (plants[i] && plants[i].health <= 0 && zombies[j].type !== 'zombistein') {
         sounds_zombisNoise[9].play();
         plants.splice(i, 1);
+        i--;
         zombies[j].movement = zombies[j].speed;
         zombies[j].frameX = 0;
         zombies[j].frameY = 0;
@@ -313,6 +331,9 @@ function handleZombies() {
       gameOver = true;
     }
     if (zombies[i] && zombies[i].health <= 0) {
+      if (zombies[i].type === 'zombistein') {
+        sounds_zombistein[1].play();
+      }
       let index = zombies.indexOf(zombies[i]);
       zombiesKilled++;
       zombiePositions.splice(zombiePositions.indexOf(zombies[i].y), 1);
@@ -321,7 +342,7 @@ function handleZombies() {
   }
   if (frame % zombiesInterval === 0 && zombiesSpawn < zombiesPerLevel) {
     let verticalPosition = floor(random(1, 6)) * cellSize + cellGap;
-    zombies.push(new Zombie(verticalPosition, typeZombie[3].health, typeZombie[3].type, img_zombies[0], typeZombie[3].walkFrames, 196, 150));
+    zombies.push(new Zombie(verticalPosition, typeZombie[0].health, typeZombie[4].type, img_zombies[2], typeZombie[4].walkFrames, typeZombie[4].width, typeZombie[4].height));
     zombiesSpawn++;
     zombiePositions.push(verticalPosition);
     if (zombiesInterval > 120) zombiesInterval -= 40;
@@ -356,7 +377,7 @@ function handleProjectiles() {
 }
 
 function handleSuns() {
-  if (currentLevel != 3){
+  if (currentLevel != 3) {
     if (!gameOver && !winmusic) {
       if (frame % 900 === 0) {
         suns.push(new Sun(random(width - (cellSize * 2)) + 100, (floor(random(1, 6)) * cellSize) + 25));

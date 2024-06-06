@@ -26,9 +26,16 @@ class Zombie {
     if (frame % 640 === 0) {
       sounds_zombisNoise[Math.floor(Math.random() * 5)].play();
     }
-    if (frame % 3 === 0) {
-      if (this.frameX < this.maxFrame) this.frameX++;
-      else this.frameX = this.minFrame;
+    if (this.type === 'zombistein'){
+      if (frame % 3 === 0) {
+        if (this.frameX < this.maxFrame) this.frameX++;
+        else this.frameX = this.minFrame;
+      }
+    } else {
+      if (frame % 3 === 0) {
+        if (this.frameX < this.maxFrame) this.frameX++;
+        else this.frameX = this.minFrame;
+      }
     }
   }
   draw() {
@@ -104,6 +111,15 @@ class Zombie {
           }
         }
         break;
+        case 'zombistein':
+          if (this.frameY == 1){
+            image(this.img, this.x - 80, this.y - 180,
+              this.spriteWidth, this.spriteHeight, this.frameX * this.spriteWidth, this.frameY * this.spriteHeight, this.spriteWidth, this.spriteHeight);
+          } else {
+            image(this.img, this.x - 80, this.y - 150,
+            this.spriteWidth, this.spriteHeight, this.frameX * this.spriteWidth, this.frameY * this.spriteHeight, this.spriteWidth, this.spriteHeight);
+          }
+          break;
     }
 
   }
