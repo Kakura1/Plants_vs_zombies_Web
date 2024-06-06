@@ -21,13 +21,13 @@ class Plant {
   draw() {
     // image(img, sx, sy, sw, sh, dx, dy, dw, dh);
     if (this.type === 'patatapum'){
-      image(this.img, this.x, this.y - 25, this.spriteWidth, this.spriteHeight,
+      image(this.img, this.x - 10, this.y - 25, this.spriteWidth * 0.8, this.spriteHeight * 0.8,
         this.frameX * this.spriteWidth, this.frameY * this.spriteHeight,
-        80, 78)
+        this.spriteWidth, this.spriteHeight);
     } else {
       image(this.img, this.x, this.y - 25, this.spriteWidth, this.spriteHeight,
         this.frameX * this.spriteWidth, this.frameY * this.spriteHeight,
-        this.spriteWidth, this.spriteHeight)
+        this.spriteWidth, this.spriteHeight);
     }
   }
   update() {
@@ -72,17 +72,15 @@ class Plant {
       switch(this.type){
         case 'girasol':
           if (frame % 500 === 0) {
-            suns.push(new Sun());
+            suns.push(new Sun(this.x, this.y));
           }
           for (let i = suns.length - 1; i >= 0; i--) {
-            suns[i].x = this.x;
-            suns[i].y = this.y;
             suns[i].update();
             suns[i].draw();
             if (suns[i].lifeTime < 0) {
               suns.splice(i, 1);
             }
-            if (mouseX && mouseY && collision(suns[i], { x: mouseX, y: mouseY, width: 0.1, height: 0.1 })) {
+            if (mouseX && mouseY && suns[i] && collision(suns[i], { x: mouseX, y: mouseY, width: 0.1, height: 0.1 })) {
               numberOfSuns += suns[i].sun;
               suns.splice(i, 1);
               sound_sun.play();

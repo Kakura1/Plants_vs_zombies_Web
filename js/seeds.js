@@ -54,7 +54,7 @@ class seedPack {
     fill('rgba(0,0,0,0.6)');
     rect(this.x, this.y, 60, this.height);
     if (this.select){
-      fill('rgba(255,255,255,0.6)');
+      fill('rgba(255,255,255,0.2)');
       rect(this.x, this.y, 60, 80);
     }
   }

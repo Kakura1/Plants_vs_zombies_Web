@@ -1,7 +1,7 @@
 class Sun {
-    constructor() {
-      this.x = random(width - (cellSize * 2)) + 100;
-      this.y = (floor(random(1, 6)) * cellSize) + 25;
+    constructor(x, y) {
+      this.x = x;
+      this.y = y;
       this.width = cellSize * 0.8;
       this.height = cellSize * 0.8;
       this.sun = random([25, 50]);

@@ -30,6 +30,7 @@ let sounds_plantsAtack = [];
 let bgmusic = false;
 let winmusic = false;
 let sound_start;
+let sound_patatapum;
 
 function preload() {
   // Carga de imagenes sprite
@@ -86,4 +87,5 @@ function preload() {
   sounds_zombisNoise.push(loadSound('assets/sounds/zombie_falling_1.ogg')); // muerto 11
   sounds_plantsAtack.push(loadSound('assets/sounds/throw.ogg'));
   sounds_plantsAtack.push(loadSound('assets/sounds/throw2.ogg'));
+  sound_patatapum = loadSound('assets/sounds/potato_mine.ogg');
 }
