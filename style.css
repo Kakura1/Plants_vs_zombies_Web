@@ -5,8 +5,35 @@ canvas {
 	position: absolute;
 	top: 50%;
 	left: 50%;
-	transform: translate(-50%, -50%);
+	transform: translate(-50%, -60%);
 	width: 900px;
 	height: 600px;
 	background: white;
+}
+section {
+	position: absolute;
+	top: 50%;
+	left: 50%;
+	transform: translate(-260%, -60%);
+	width: 300px;
+	height: 650px;
+	background: rgb(212, 209, 209);
+}
+h2{
+	font-size: 45px;
+	text-align: center;
+	margin: 0 30px;
+	padding-bottom: 10px;
+}
+h3{
+	font-size: 25px;
+	text-align: center;
+	margin: 0 30px;
+	padding-bottom: 10px;
+}
+h4 {
+	font-size: 15px;
+	text-align: center;
+	margin: 0 30px;
+	padding-bottom: 10px;
 }

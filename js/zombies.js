@@ -4,7 +4,7 @@ class Zombie {
     this.y = verticalPosition;
     this.width = cellSize - cellGap * 2;
     this.height = cellSize - cellGap * 2;
-    this.speed = random(0.2, 0.5);
+    this.speed = random(0.2, 0.3);
     this.movement = this.speed;
     this.health = health;
     this.maxHealth = this.health;
@@ -20,6 +20,7 @@ class Zombie {
     this.headHeight;
     this.headX;
     this.headY;
+    this.hasP = floor(random(1,10));
   }
   update() {
     this.x -= this.movement;
@@ -46,7 +47,8 @@ class Zombie {
           this.spriteWidth, this.spriteHeight, this.frameX * this.spriteWidth, this.frameY * this.spriteHeight, this.spriteWidth, this.spriteHeight);
         break;
       case 'abanderado':
-        image(this.img, this.x - 50, this.y - 65,
+        this.minFrame = 4;
+        image(this.img, this.x - 50, this.y - 80,
           this.spriteWidth, this.spriteHeight, this.frameX * this.spriteWidth, this.frameY * this.spriteHeight, this.spriteWidth, this.spriteHeight);
         break;
       case 'caracono':

@@ -6,7 +6,8 @@ let cellGap = 3;
 let gameGrid = [];
 let plants = [];
 let zombies = [];
-let numberOfSuns = 2000;
+let numberOfSuns = 150;
+let numberOfLeafs = 0;
 let frame = 0;
 let zombiesInterval = 900;
 let zombiesPerLevel = 15;
@@ -16,8 +17,9 @@ let gameOver = false;
 let zombiePositions = [];
 let projectiles = [];
 let suns = [];
+let leafs = [];
 let controlsBar;
-let currentLevel = 3;
+let currentLevel = 1;
 
 
 let keys = [{
@@ -156,41 +158,94 @@ function draw() {
     case 1:
       image(img_bg[0], 0, 0, 900, 600, 98, 0, 900, 600, COVER);
       n = 0;
+      if (!sound_start.isPlaying()) {
+        if (!bgmusic) {
+          sounds_levelMusic[n].volume = 0.6;
+          sounds_levelMusic[n].loop();
+          bgmusic = true;
+        }
+        if (!gameOver && !winmusic) {
+    
+        }
+        handleGameStatus();
+        handlePlants();
+        handleProjectiles();
+        handleZombies();
+        handleSuns();
+        handleGameGrid();
+    
+      } else {
+        image(img_start, 345, 260, 310, 112, 0, x * 116, 310, 112);
+        if (frame % 60 === 30 && x < 3) {
+          x++;
+        }
+        if (x === 3) {
+          second();
+          sound_start.stop();
+        }
+      }
       break;
     case 2:
       image(img_bg[0], 0, 0, 900, 600, 98, 0, 900, 600, COVER);
       n = 0;
+      if (!sound_start.isPlaying()) {
+        if (!bgmusic) {
+          sounds_levelMusic[n].volume = 0.6;
+          sounds_levelMusic[n].loop();
+          bgmusic = true;
+        }
+        if (!gameOver && !winmusic) {
+    
+        }
+        handleGameStatus();
+        handlePlants();
+        handleProjectiles();
+        handleZombies();
+        handleSuns();
+        handleGameGrid();
+    
+      } else {
+        image(img_start, 345, 260, 310, 112, 0, x * 116, 310, 112);
+        if (frame % 60 === 30 && x < 3) {
+          x++;
+        }
+        if (x === 3) {
+          second();
+          sound_start.stop();
+        }
+      }
       break;
     case 3:
       image(img_bg[1], 0, 0, 900, 600, 98, 0, 900, 600, COVER);
       n = 1;
+      if (!sound_start.isPlaying()) {
+        if (!bgmusic) {
+          sounds_levelMusic[n].volume = 0.6;
+          sounds_levelMusic[n].loop();
+          bgmusic = true;
+        }
+        if (!gameOver && !winmusic) {
+    
+        }
+        handleGameStatus();
+        handlePlants();
+        handleProjectiles();
+        handleZombies();
+        handleSuns();
+        handleLeafs();
+        handleGameGrid();
+    
+      } else {
+        image(img_start, 345, 260, 310, 112, 0, x * 116, 310, 112);
+        if (frame % 60 === 30 && x < 3) {
+          x++;
+        }
+        if (x === 3) {
+          second();
+          sound_start.stop();
+        }
+      }
       break;
-  }
-  if (!sound_start.isPlaying()) {
-    if (!bgmusic) {
-      sounds_levelMusic[n].volume = 0.6;
-      sounds_levelMusic[n].loop();
-      bgmusic = true;
-    }
-    if (!gameOver && !winmusic) {
-
-    }
-    handleGameStatus();
-    handlePlants();
-    handleProjectiles();
-    handleZombies();
-    handleSuns();
-    handleGameGrid();
-
-  } else {
-    image(img_start, 345, 260, 310, 112, 0, x * 116, 310, 112);
-    if (frame % 60 === 30 && x < 3) {
-      x++;
-    }
-    if (x === 3) {
-      second();
-      sound_start.stop();
-    }
   }
   frame++;
 }
@@ -246,7 +301,6 @@ function mousePressed() {
       plants.push(new Plant(gridPositionX, gridPositionY, typePlants[plantSelect].health, typePlants[plantSelect].type, img_plants[plantSelect], typePlants[plantSelect].maxFrame, typePlants[plantSelect].width, typePlants[plantSelect].height, typePlants[plantSelect].isShooter));
       seeds[plantSelect].height = 80;
       seeds[plantSelect].timeWait = typePlants[plantSelect].time;
-      seeds[plantSelect].select = false;
       sound_seed.play();
       numberOfSuns -= plantCost;
     } else {
@@ -287,7 +341,7 @@ function handlePlants() {
           zombies[j].frameX = 0;
           zombies[j].frameY = 0;
           zombies[j].maxFrame = typeZombie[0].walkFrames;
-        } else if(zombies[j].type !== 'zombistein'){
+        } else if (zombies[j].type !== 'zombistein') {
           plants[i].health -= 0.5;
           if (plants[i].health % 30 === 0) {
             sounds_zombisNoise[Math.floor(Math.random() * 3) + 5].play();
@@ -307,22 +361,36 @@ function handlePlants() {
   }
 }
 
+let zombieSelect;
 function handleZombies() {
-  let r = floor(random(1, 25));
-  let head = 1;
-  if (currentLevel == 3) {
-    r = floor(random(1, 30));
-    head = floor(random(1, 2));
-  }
   let z = 0;
-  if (r <= 20) z = 1;
-  if (r > 20 && r <= 25) z = 2;
-  if (r > 25 && r <= 30) z = 3;
-  if (zombiesSpawn % 6 === 0) {
-    r = 3;
+  if (zombiesSpawn < 10){
+    z = 0
+  } else if (zombiesSpawn % 10 == 1) {
+    z = 1
+  } else if (zombiesSpawn > 10) {
+    z = 2;
+  } else if (zombiesSpawn > 20 && currentLevel > 1) {
+    z = 3;
+  } else if (zombiesSpawn > 25 && currentLevel > 2) {
+    z = 4;
   }
-  if (zombiesSpawn % 13 === 0) {
-    r = 4;
+  switch (z) {
+    case 0:
+      zombieSelect = 0;
+      break;
+    case 1:
+      zombieSelect = 1;
+      break;
+    case 2:
+      zombieSelect = 0;
+      break;
+    case 3:
+      zombieSelect = 0;
+      break;
+    case 4:
+      zombieSelect = 2;
+      break;
   }
   for (let i = 0; i < zombies.length; i++) {
     zombies[i].update();
@@ -342,7 +410,7 @@ function handleZombies() {
   }
   if (frame % zombiesInterval === 0 && zombiesSpawn < zombiesPerLevel) {
     let verticalPosition = floor(random(1, 6)) * cellSize + cellGap;
-    zombies.push(new Zombie(verticalPosition, typeZombie[0].health, typeZombie[4].type, img_zombies[2], typeZombie[4].walkFrames, typeZombie[4].width, typeZombie[4].height));
+    zombies.push(new Zombie(verticalPosition, typeZombie[z].health, typeZombie[z].type, img_zombies[zombieSelect], typeZombie[z].walkFrames, typeZombie[z].width, typeZombie[z].height));
     zombiesSpawn++;
     zombiePositions.push(verticalPosition);
     if (zombiesInterval > 120) zombiesInterval -= 40;
@@ -390,10 +458,32 @@ function handleSuns() {
       if (sun.lifeTime <= 0) {
         suns.splice(i, 1);
       }
-      if (mouseX && mouseY && collision(sun, { x: mouseX, y: mouseY, width: 0.1, height: 0.1 })) {
+      if (mouseX && mouseY && sun && collision(sun, { x: mouseX, y: mouseY, width: 0.1, height: 0.1 })) {
         numberOfSuns += sun.sun;
         suns.splice(i, 1);
         sound_sun.play();
+      }
+    }
+  }
+}
+
+function handleLeafs(){
+  if (currentLevel != 1) {
+    if (zombiesKilled % 10 == 1) {
+        leafs.push(new leaf(random(width - (cellSize * 2)) + 100, (floor(random(1, 6)) * cellSize) + 25));
+        sound_leaf[0].play();
+    }
+    for (let i = leafs.length - 1; i >= 0; i--) {
+      let leaf = leafs[i];
+      leaf.update();
+      leaf.draw();
+      if (leaf.lifeTime <= 0) {
+        leafs.splice(i, 1);
+      }
+      if (mouseX && mouseY && leaf && collision(leaf, { x: mouseX, y: mouseY, width: 0.1, height: 0.1 })) {
+        numberOfLeafs += 1;
+        leafs.splice(i, 1);
+        sound_leaf[1].play();
       }
     }
   }
@@ -414,23 +504,43 @@ function handleGameStatus() {
     // Siguiente nivel
     if (!winmusic) {
       sound_win.play();
-      sounds_levelMusic[0].stop();
-      sounds_levelMusic[1].stop();
       winmusic = true;
+      sounds_levelMusic[0].stop();
+      sounds_levelMusic[1].stop();      
+    }
+    if (!sound_win.isPlaying()){
       switch (currentLevel) {
         case 1:
           currentLevel = 2;
           zombiesInterval = 750;
           zombiesSpawn = 0;
           zombiesPerLevel *= 3;
+          frame = 0;
+          numberOfSuns = 100;
+          bgmusic = false;
+          winmusic = false;
+          x = 0;
+          plants.splice(0, plants.length);
+          suns.splice(0,suns.length);
+          sound_start.play();
           break;
         case 2:
           currentLevel = 3;
           zombiesInterval = 750;
           zombiesSpawn = 0;
           zombiesPerLevel *= 2;
+          frame = 0;
+          numberOfSuns = 50;
+          bgmusic = false;
+          winmusic = false;
+          x = 0;
+          plants.splice(0, plants.length);
+          suns.splice(0,suns.length);
+          projectiles.splice(0, projectiles.length);
+          sound_start.play();
           break;
       }
+
     }
   }
 }
@@ -473,6 +583,19 @@ function seedPacks() {
   textSize(25);
   textAlign(CENTER, CENTER);
   text(numberOfSuns, 50, 95);
+  if (currentLevel != 1){
+    fill('rgb(147, 69, 28)');
+    rect(530, 12, 60, 60);
+    fill('rgb(112, 50, 19)');
+    rect(540, 20, 40, 40);
+    image(img_projectiles, 540, 20, 40, 40, 5, 5, 38, 38);
+    fill('rgb(234, 197, 141)');
+    rect(530, 60, 60, 25);
+    fill('black');
+    textSize(20);
+    textAlign(CENTER, CENTER);
+    text(numberOfLeafs, 560, 73);
+  }
 }
 
 function keyTyped() {

@@ -71,7 +71,8 @@ class Plant {
     } else {
       switch(this.type){
         case 'girasol':
-          if (frame % 500 === 0) {
+          this.timer++;
+          if (this.timer % 400 === 0) {
             suns.push(new Sun(this.x, this.y));
           }
           for (let i = suns.length - 1; i >= 0; i--) {

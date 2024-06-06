@@ -31,6 +31,7 @@ let bgmusic = false;
 let winmusic = false;
 let sound_start;
 let sound_patatapum;
+let sound_leaf = [];
 
 function preload() {
   // Carga de imagenes sprite
@@ -88,4 +89,6 @@ function preload() {
   sounds_plantsAtack.push(loadSound('assets/sounds/throw.ogg'));
   sounds_plantsAtack.push(loadSound('assets/sounds/throw2.ogg'));
   sound_patatapum = loadSound('assets/sounds/potato_mine.ogg');
+  sound_leaf.push(loadSound('assets/sounds/diamond.wav'));
+  sound_leaf.push(loadSound('assets/sounds/prize.ogg'));
 }
