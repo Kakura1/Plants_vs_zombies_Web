@@ -7,10 +7,9 @@ let gameGrid = [];
 let plants = [];
 let zombies = [];
 let numberOfSuns = 150;
-let numberOfLeafs = 0;
 let frame = 0;
 let zombiesInterval = 900;
-let zombiesPerLevel = 15;
+let zombiesPerLevel = 1;
 let zombiesKilled = 0;
 let zombiesSpawn = 0;
 let gameOver = false;
@@ -232,7 +231,6 @@ function draw() {
         handleProjectiles();
         handleZombies();
         handleSuns();
-        handleLeafs();
         handleGameGrid();
     
       } else {
@@ -370,11 +368,16 @@ function handleZombies() {
     z = 1
   } else if (zombiesSpawn > 10) {
     z = 2;
-  } else if (zombiesSpawn > 20 && currentLevel > 1) {
+  } else if (zombiesSpawn > 20 && currentLevel < 1 && zombiesSpawn % 5 == 1) {
     z = 3;
-  } else if (zombiesSpawn > 25 && currentLevel > 2) {
-    z = 4;
-  }
+    if (zombiesSpawn > 25 && currentLevel < 2 && zombiesSpawn % 28 == 1) {
+      z = 4;
+    } else {
+      z = 3;
+    }
+  } else {
+    z = 2;
+  } 
   switch (z) {
     case 0:
       zombieSelect = 0;
@@ -467,27 +470,6 @@ function handleSuns() {
   }
 }
 
-function handleLeafs(){
-  if (currentLevel != 1) {
-    if (zombiesKilled % 10 == 1) {
-        leafs.push(new leaf(random(width - (cellSize * 2)) + 100, (floor(random(1, 6)) * cellSize) + 25));
-        sound_leaf[0].play();
-    }
-    for (let i = leafs.length - 1; i >= 0; i--) {
-      let leaf = leafs[i];
-      leaf.update();
-      leaf.draw();
-      if (leaf.lifeTime <= 0) {
-        leafs.splice(i, 1);
-      }
-      if (mouseX && mouseY && leaf && collision(leaf, { x: mouseX, y: mouseY, width: 0.1, height: 0.1 })) {
-        numberOfLeafs += 1;
-        leafs.splice(i, 1);
-        sound_leaf[1].play();
-      }
-    }
-  }
-}
 
 function handleGameStatus() {
   seedPacks();
@@ -583,19 +565,6 @@ function seedPacks() {
   textSize(25);
   textAlign(CENTER, CENTER);
   text(numberOfSuns, 50, 95);
-  if (currentLevel != 1){
-    fill('rgb(147, 69, 28)');
-    rect(530, 12, 60, 60);
-    fill('rgb(112, 50, 19)');
-    rect(540, 20, 40, 40);
-    image(img_projectiles, 540, 20, 40, 40, 5, 5, 38, 38);
-    fill('rgb(234, 197, 141)');
-    rect(530, 60, 60, 25);
-    fill('black');
-    textSize(20);
-    textAlign(CENTER, CENTER);
-    text(numberOfLeafs, 560, 73);
-  }
 }
 
 function keyTyped() {
